@@ -1,64 +1,48 @@
-import pygame
+from tkinter import *
+from tkinter.filedialog import askopenfilename,asksaveasfilename
+
+window = Tk()
+window.title("text editor")
+window.geometry("600x500")
+window.rowconfigure(0,minsize=800,weight=1)
+window.columnconfigure(1,minsize=800,weight=1)
+
+def open_file():
+    filepath = askopenfilename(filetypes=[("Text Files","*.txt"),("All Files",("*.*"))])
+    if not filepath:
+        return
+    txt_edit.delete(1.0,END)
+    with open(filepath,"r") as input_file:
+        text = input_file.read()
+        txt_edit.insert(END,text)
+        input_file.close()
+    window.title(f"text editor {filepath}")
 
 
-def main():
-    pygame.init()
-    screen_width, screen_height = 500, 500
-    screen = pygame.display.set_mode((screen_width, screen_height))
-
-    # Mapping of color names to RGB values
-    colors = {
-        "red": pygame.Color("red"),
-        "green": pygame.Color("green"),
-        "blue": pygame.Color("blue"),
-        "yellow": pygame.Color("yellow"),
-        "white": pygame.Color("white"),
-    }
-    current_color = colors["white"]
-
-    x, y = 30, 30
-    sprite_width, sprite_height = 60, 60
-
-    clock = pygame.time.Clock()
-
-    done = False
-    while not done:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                done = True
-
-        pressed = pygame.key.get_pressed()
-        if pressed[pygame.K_LEFT]:
-            x -= 3
-        if pressed[pygame.K_RIGHT]:
-            x += 3
-        if pressed[pygame.K_UP]:
-            y -= 3
-        if pressed[pygame.K_DOWN]:
-            y += 3
-
-        x = min(max(0, x), screen_width - sprite_width)
-        y = min(max(0, y), screen_height - sprite_height)
-
-        # Change color based on boundary contact
-        if x == 0:
-            current_color = colors["blue"]
-        elif x == screen_width - sprite_width:
-            current_color = colors["yellow"]
-        elif y == 0:
-            current_color = colors["red"]
-        elif y == screen_height - sprite_height:
-            current_color = colors["green"]
-        else:
-            current_color = colors["white"]
-
-        screen.fill((0, 0, 0))
-        pygame.draw.rect(screen, current_color, (x, y, sprite_width, sprite_height))
-        pygame.display.flip()
-        clock.tick(90)
-
-    pygame.quit()
+def save_file():
+    filepath = asksaveasfilename(
+        defaultextension="txt",
+        filetypes=[("Text Files", "*.txt"), ("All Files", "*.*")],
+    )
+    if not filepath:
+        return
+    with open(filepath, "w") as output_file:
+        text = txt_edit.get(1.0, END)
+        output_file.write(text)
+    window.title(f"Codingal's Text Editor - {filepath}")
 
 
-if __name__ == "__main__":
-    main()
+txt_edit = Text(window)
+f1 = Frame(window,relief=RAISED,bd=2)
+bo = Button(f1,text="open",command=open_file)
+bs = Button(f1, text="save as", command=save_file)
+bo.grid(row=0, column=0, sticky="ew", padx=5, pady=5)
+bs.grid(row=1, column=0, sticky="ew", padx=5)
+
+f1.grid(row=0, column=0, sticky="ns")
+txt_edit.grid(row=0, column=1, sticky="nsew")
+
+window.mainloop()
+
+
+#@arjeeta
